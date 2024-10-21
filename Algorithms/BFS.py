@@ -51,15 +51,17 @@ class BFSAgent:
     def BFS (self):
         res = self.BFS_()
         if res[0]==None :
-           print("#####UNSOLVABLE!#####")
-           print("expanded nodes : " ,res[2])
+           # print("#####UNSOLVABLE!#####")
+           # print("expanded nodes : " ,res[2])
+            pass
         else:
-            print("#####SOLVABLE#####")
-            print("path : " ,res[0])
-            print("cost : ",res[1])
-            print("expanded nodes : " ,res[2])
-            print("search depth : " ,res[3])
-        print("time elapsed : ",res[4])
+        #     print("#####SOLVABLE#####")
+        #     print("path : " ,res[0])
+        #     print("cost : ",res[1])
+        #     print("expanded nodes : " ,res[2])
+        #     print("search depth : " ,res[3])
+        # print("time elapsed : ",res[4])
+            pass
      
 
             
@@ -93,9 +95,10 @@ class BFSAgent:
 
 
 l = BFSAgent(
-[[1, 0, 2],
- [3, 4, 5],
- [6, 7, 8]]
+[[1, 8, 2],
+ [0, 4, 3],
+ [7, 6, 5]]
 )
-res =l.BFS()
+res =l.BFS_()
 
+print(res)
