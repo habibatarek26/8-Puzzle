@@ -6,7 +6,7 @@ from typing import List, Set
 class BFSAgent:
     def __init__(self, initial_State):
         self.explored = set()
-        self.path = []
+        self.path = [] 
         self.parent = {}
         self.goal = 12345678
         self.initial_State = self.prepare_initial_State(initial_State)
@@ -49,6 +49,21 @@ class BFSAgent:
         return intial
     
     def BFS (self):
+        res = self.BFS_()
+        if res[0]==None :
+           print("#####UNSOLVABLE!#####")
+           print("expanded nodes : " ,res[2])
+        else:
+            print("#####SOLVABLE#####")
+            print("path : " ,res[0])
+            print("cost : ",res[1])
+            print("expanded nodes : " ,res[2])
+            print("search depth : " ,res[3])
+        print("time elapsed : ",res[4])
+     
+
+            
+    def BFS_ (self):
         start_time = time.time()
         frontier_set = set()
         frontier = Queue()
@@ -61,7 +76,7 @@ class BFSAgent:
             if state== self.goal:
                 self.get_path(state)
                 end_time = time.time()
-                return self.path , len(self.path), len(self.explored) , end_time-start_time
+                return self.path , len(self.path), len(self.explored) ,len(self.path), end_time-start_time
             
             children = self.get_children(state)
             for child in children:
@@ -71,32 +86,16 @@ class BFSAgent:
                     self.parent[child[0]] = (state,child[1])
         end_time = time.time()
        
-        return None , None, None,end_time-start_time
+        return None , None, len(self.explored),None,end_time-start_time
 
 
 
 
 
 l = BFSAgent(
-[[1, 2, 3],
- [4, 5, 6],
- [7, 0, 8]]
+[[1, 0, 2],
+ [3, 4, 5],
+ [6, 7, 8]]
 )
 res =l.BFS()
-print("SOLVABLE")
-print("path : " ,res[0])
-print("cost : ",res[1])
-print("expanded nodes : " ,res[2])
-print("time elapsed : ",res[3])
 
-k = BFSAgent(
-[[2, 1, 3],
- [4, 5, 6],
- [7, 8, 0]]
-)
-res2= k.BFS()
-print("UNSOLVABLE")
-print("path : " ,res2[0])
-print("cost : ",res2[1])
-print("expanded nodes : " ,res2[2])
-print("time elapsed : ",res2[3])
