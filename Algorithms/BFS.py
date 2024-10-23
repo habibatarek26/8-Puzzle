@@ -78,8 +78,9 @@ class BFSAgent:
             if state== self.goal:
                 self.get_path(state)
                 end_time = time.time()
-                self.path.append((12345678, ''))
-                return self.path, len(self.path) - 1, len(self.explored) ,len(self.path) - 1, end_time-start_time
+                formated_path = [(self.initial_State, self.path[0][1])] + [(self.path[i - 1][0], self.path[i][1]) for i in range(1, len(self.path))]
+                formated_path.append((12345678, ''))
+                return formated_path, len(self.path), len(self.explored), len(self.path) - 1, end_time-start_time
             
             children = self.get_children(state)
             for child in children:
