@@ -4,6 +4,63 @@ from Algorithms.Astar import *
 from Algorithms.BFS import *
 
 
+def show_steps(app, states, time_taken, nodes_expanded, search_depth):
+    steps_frame = ctk.CTkScrollableFrame(app,
+                                         fg_color="#540d6e",
+                                         corner_radius=0)
+    steps_frame.place(relx=0.7, rely=0.35)
+
+    for i in range(len(states)):
+
+        state = states[i][0]
+
+        st = ctk.CTkFrame(steps_frame,
+                                 fg_color='black',
+                                 width=80,
+                                 height=50)
+
+        st.pack(pady=10)
+
+        state_str = str(state).zfill(9)
+        formatted_state = [state_str[i:i + 3] for i in range(0, len(state_str), 3)]
+
+
+        state_string = "\n".join([f"[{' '.join(row)}]" for row in formatted_state])
+
+        ctk.CTkLabel(st,
+                     font=("Digital-7 Mono", 28, "bold"),
+                     text=state_string).pack()
+
+        if states[i][1] != "":
+            direction = ctk.CTkFrame(steps_frame,
+                                     fg_color='red',
+                                     width=80,
+                                     height=50)
+
+            direction.pack(pady=10)
+
+            ctk.CTkLabel(direction,
+                         font=("Digital-7 Mono", 28, "bold"),
+                         text=f"{i + 1} - {states[i][1]}").pack()
+
+    results = ctk.CTkFrame(app,
+                        fg_color="#540d6e")
+
+    results.place(relx=0.7, rely=0.7)
+
+    ctk.CTkLabel(results,
+                 font=("Digital-7 Mono", 18, "bold"),
+                 text=f"Time Taken:{time_taken:.5f}").pack(pady=10)
+
+    ctk.CTkLabel(results,
+                 font=("Digital-7 Mono", 18, "bold"),
+                 text=f"Nodes Expanded:{nodes_expanded}").pack(pady=10)
+
+    ctk.CTkLabel(results,
+                 font=("Digital-7 Mono", 18, "bold"),
+                 text=f"search depth:{search_depth}").pack(pady=10)
+
+
 def show_optional_choices(s, app):
     if s == "A*":
         manhattan_var = ctk.StringVar(value="off")
@@ -14,7 +71,7 @@ def show_optional_choices(s, app):
             if manhattan_var.get() == "on":
                 euclidean_var.set("off")
                 app.selected_heuristic.set("manhattan")
-                print("Selected heuristic:", app.selected_heuristic.get())
+                # print("Selected heuristic:", app.selected_heuristic.get())
             else:
                 app.selected_heuristic.set("")
             h2.deselect()
@@ -23,7 +80,7 @@ def show_optional_choices(s, app):
             if euclidean_var.get() == "on":
                 manhattan_var.set("off")
                 app.selected_heuristic.set("euclidean")
-                print("Selected heuristic:", app.selected_heuristic.get())
+                # print("Selected heuristic:", app.selected_heuristic.get())
             else:
                 app.selected_heuristic.set("")
             h1.deselect()
@@ -170,21 +227,25 @@ def solve(app, algorithm, entries):
 
         if algorithm == "A*" and app.selected_heuristic.get() != "":
             initial_board = string_to_board(state_str)
-            states, moves = a_star(initial_board, app.selected_heuristic.get())
+            states, moves, timeTaken, nodes = a_star(initial_board, app.selected_heuristic.get())
+            show_steps(app, states, timeTaken, nodes, moves)
+            states = [state[0] for state in states]
             show_states(app, states, 0)
 
         elif algorithm == "BFS":
             initial_board = string_to_board(state_str)
             result = BFSAgent(initial_board).BFS_()
+            show_steps(app, result[0], result[4], result[2], result[1])
             states = [str(state[0]).zfill(9) for state in result[0]]
             show_states(app, states, 0)
 
-        else:
+        elif algorithm == "A*":
             show_optional_choices("A*", app)
             ctk.CTkLabel(master=app,
                          text="You must select a heuristic to solve the puzzle",
                          text_color="red",
                          font=("Digital-7 Mono", 28, "bold")).place(relx=0.5225, rely=0.9, anchor="center")
+
     else:
         ctk.CTkLabel(master=app,
                      text="Invalid Initial State",

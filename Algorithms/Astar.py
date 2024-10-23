@@ -1,6 +1,6 @@
 import heapq
 import math
-import sys
+import time
 
 
 class PuzzleState:
@@ -92,7 +92,31 @@ def string_to_board(state_str):
     return [[int(state_str[i * 3 + j]) for j in range(3)] for i in range(3)]
 
 
+def get_move_between_states(current_state, next_state):
+    if not next_state:
+        return ''
+
+    curr_zero_idx = current_state.index('0')
+    next_zero_idx = next_state.index('0')
+
+    curr_row, curr_col = divmod(curr_zero_idx, 3)
+    next_row, next_col = divmod(next_zero_idx, 3)
+
+    if next_row < curr_row:
+        return 'up'
+    elif next_row > curr_row:
+        return 'down'
+    elif next_col < curr_col:
+        return 'left'
+    elif next_col > curr_col:
+        return 'right'
+    return ''
+
+
 def a_star(initial_board, heuristic_type='manhattan'):
+    start_time = time.time()
+    nodes_expanded = 0
+
     initial_state_str = board_to_string(initial_board)
     initial_state = PuzzleState(initial_state_str, 0, None, heuristic_type)
 
@@ -105,20 +129,35 @@ def a_star(initial_board, heuristic_type='manhattan'):
 
         if current_state.state_str == "012345678":
             path = []
+            states = []
             while current_state:
-                path.append(current_state.state_str)
+                states.append(current_state.state_str)
                 current_state = current_state.previous
-            return path[::-1], len(path) - 1
+            states = states[::-1]
+
+            for i in range(len(states)):
+                next_state = states[i + 1] if i < len(states) - 1 else None
+                move = get_move_between_states(states[i], next_state)
+                path.append((states[i], move))
+
+            end_time = time.time()
+            return path, len(path) - 1, end_time - start_time, nodes_expanded
 
         if current_state.state_str in closed_set:
             continue
 
         closed_set.add(current_state.state_str)
+        nodes_expanded += 1
 
         for neighbor in current_state.get_neighbors():
             if neighbor.state_str not in closed_set:
                 heapq.heappush(open_set, neighbor)
 
-    return None, 0
+    return None, 0, 0, nodes_expanded
 
 
+# Usage
+# puzzle = [[1, 8, 2], [0, 4, 3], [7, 6, 5]]
+# solution, steps, time_taken, expanded_nodes = a_star(puzzle, 'euclidean')
+# print(f"Solution: {solution}")
+# print(f"Number of nodes expanded: {expanded_nodes}")
